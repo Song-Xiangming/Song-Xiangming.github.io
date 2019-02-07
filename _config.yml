@@ -80,5 +80,5 @@ theme: next
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://github.com/Song-Xiangming/Song-Xiangming.github.io
+  repo: https://github.com/xmasong/xmasong.github.io
   branch: master
