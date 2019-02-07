@@ -96,23 +96,31 @@
 
 
 
-  <meta name="description" content="前端，博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="无花师兄的小院">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="阅读本文需8分钟，可以了解：  使用chrome performance进行性能分析的方式 前端长列表渲染的解决方案   背景本文是记录了一个页面性能问题的排查和解决过程。起因是在做公司项目时，在一个页面中，发现编辑器中快速输入出现卡顿，影响用户体验。如图： 问题排查问题定位 在SQL编辑器卡顿状态下，尝试在编辑器下方备注栏快速输入，也有卡顿现象。 清除页面中其他元素，只保留SQL编辑器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="长列表性能优化">
+<meta property="og:url" content="http://yoursite.com/2019/02/07/rds-long-list/index.html">
 <meta property="og:site_name" content="无花师兄的小院">
-<meta property="og:description" content="前端，博客">
+<meta property="og:description" content="阅读本文需8分钟，可以了解：  使用chrome performance进行性能分析的方式 前端长列表渲染的解决方案   背景本文是记录了一个页面性能问题的排查和解决过程。起因是在做公司项目时，在一个页面中，发现编辑器中快速输入出现卡顿，影响用户体验。如图： 问题排查问题定位 在SQL编辑器卡顿状态下，尝试在编辑器下方备注栏快速输入，也有卡顿现象。 清除页面中其他元素，只保留SQL编辑器">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNc79ly1fzxmfhkj3cj31h20u0aba.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tNc79gy1fzgabthgkcj31hc0qego6.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tNc79ly1fzxnjwk1s2j30v40dsaan.jpg">
+<meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNc79gy1fzgaajkwtag31qi0kae81.gif">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/006tNc79ly1fzxqjfko30j317e0eegmf.jpg">
+<meta property="og:image" content="https://ws3.sinaimg.cn/large/006tNc79ly1fzxqlkege3j31hc0mpwgo.jpg">
+<meta property="og:updated_time" content="2019-02-07T04:31:09.581Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="无花师兄的小院">
-<meta name="twitter:description" content="前端，博客">
+<meta name="twitter:title" content="长列表性能优化">
+<meta name="twitter:description" content="阅读本文需8分钟，可以了解：  使用chrome performance进行性能分析的方式 前端长列表渲染的解决方案   背景本文是记录了一个页面性能问题的排查和解决过程。起因是在做公司项目时，在一个页面中，发现编辑器中快速输入出现卡顿，影响用户体验。如图： 问题排查问题定位 在SQL编辑器卡顿状态下，尝试在编辑器下方备注栏快速输入，也有卡顿现象。 清除页面中其他元素，只保留SQL编辑器">
+<meta name="twitter:image" content="https://ws4.sinaimg.cn/large/006tNc79ly1fzxmfhkj3cj31h20u0aba.jpg">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/">
+  <link rel="canonical" href="http://yoursite.com/2019/02/07/rds-long-list/">
 
 
 
@@ -122,7 +130,7 @@
   };
 </script>
 
-  <title>无花师兄的小院</title>
+  <title>长列表性能优化 | 无花师兄的小院</title>
   
 
 
@@ -170,8 +178,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
@@ -209,7 +216,7 @@
         
         
           
-          <li class="menu-item menu-item-home menu-item-active">
+          <li class="menu-item menu-item-home">
 
     
     
@@ -271,9 +278,9 @@
           
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -305,10 +312,8 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/07/rds-long-list/" class="post-title-link" itemprop="url">长列表性能优化</a>
+          <h1 class="post-title" itemprop="name headline">长列表性能优化
+
               
             
           </h1>
@@ -372,9 +377,7 @@
       
 
       
-        
-          
-            <blockquote>
+        <blockquote>
 <p>阅读本文需8分钟，可以了解：</p>
 <ol>
 <li>使用chrome performance进行性能分析的方式</li>
@@ -469,8 +472,6 @@
 <h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>通过指标对比表格，和优化后的分析图可以看出，使用了可视区渲染优化后，各项指标都有了明显好转。</p>
 <h2 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h2><p>做这次优化时，脑海中有“只渲染视图区域内容，移除视野外dom”的模糊想法，Google一下，果然已有前人实现了这个思路，原来叫“可视区域渲染”，并且还有了不少开源库。赶紧借此机会，深入学习下长列表渲染的几种优化方式。同时，对于chrome performance的使用，我了解的还比较浅，文中有什么错误，欢迎指正。如果你也遇到类似问题，希望这篇文章，能给你带来一些帮助~</p>
 
-          
-        
       
     </div>
 
@@ -493,159 +494,28 @@
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/15/hello-world/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="无花">
-      <meta itemprop="description" content="前端，博客">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="无花师兄的小院">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/01/15/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-              
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
+              <a href="/2019/01/15/hello-world/" rel="next" title="Hello World">
+                <i class="fa fa-chevron-left"></i> Hello World
+              </a>
             
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-01-15 09:24:21" itemprop="dateCreated datePublished" datetime="2019-01-15T09:24:21+08:00">2019-01-15</time>
-            
-
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -655,14 +525,15 @@
   </article>
 
 
-    
-  </section>
-
-  
+  </div>
 
 
           </div>
           
+
+  
+
+
 
         </div>
         
@@ -683,8 +554,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -728,6 +608,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题排查"><span class="nav-number">2.</span> <span class="nav-text">问题排查</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题定位"><span class="nav-number">2.1.</span> <span class="nav-text">问题定位</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#页面性能分析"><span class="nav-number">2.2.</span> <span class="nav-text">页面性能分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案"><span class="nav-number">3.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#滚动加载"><span class="nav-number">3.1.</span> <span class="nav-text">滚动加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可视区渲染"><span class="nav-number">3.2.</span> <span class="nav-text">可视区渲染</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#相关工具"><span class="nav-number">3.3.</span> <span class="nav-text">相关工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结果"><span class="nav-number">4.</span> <span class="nav-text">结果</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#指标对比"><span class="nav-number">4.1.</span> <span class="nav-text">指标对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优化后性能检测对比图"><span class="nav-number">4.2.</span> <span class="nav-text">优化后性能检测对比图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结论"><span class="nav-number">4.3.</span> <span class="nav-text">结论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#感想"><span class="nav-number">5.</span> <span class="nav-text">感想</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
@@ -855,6 +752,10 @@
 
 
   
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
 
   
 
@@ -865,6 +766,8 @@
 
   
 
+
+  
 
 
   
