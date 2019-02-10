@@ -4,7 +4,9 @@ date: 2019-02-7 10:29:06
 tags: 
     - js
     - 性能优化
+comments: true
 ---
+
 > 阅读本文需8分钟，可以了解：
 1. 使用chrome performance进行性能分析的方式
 2. 前端长列表渲染的解决方案
