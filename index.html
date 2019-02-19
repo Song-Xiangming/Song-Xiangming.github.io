@@ -386,101 +386,29 @@
       
         
           
-            <blockquote>
-<p>阅读本文需15分钟，可以学习：</p>
-</blockquote>
-<ol>
-<li>强化js基础</li>
-<li>检验自己对闭包, this指向的理解  </li>
-</ol>
-<p><strong>本文中题目都在非严格模式下执行</strong></p>
-<h2 id="第一题"><a href="#第一题" class="headerlink" title="第一题"></a>第一题</h2><h3 id="原始题目"><a href="#原始题目" class="headerlink" title="原始题目"></a>原始题目</h3><ul>
-<li><p>题干</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(i);</span><br><span class="line">    &#125;, <span class="number">1000</span>);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="built_in">console</span>.log(i);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 选项</span></span><br><span class="line">A. <span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span></span><br><span class="line">B. <span class="number">5</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span></span><br><span class="line">C. <span class="number">5</span>,<span class="number">5</span>,<span class="number">5</span>,<span class="number">5</span>,<span class="number">5</span>,<span class="number">5</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>答案：C</p>
-</li>
-<li>解析：setTimeout会将传入的方法移至下一js队列执行，当前队列执行完for循环已结束，增长到5，所以最终输出全部是5</li>
-</ul>
-<h3 id="追问1"><a href="#追问1" class="headerlink" title="追问1"></a>追问1</h3><ul>
-<li><p>如果我们约定，<strong>用箭头表示其前后的两次输出之间有 1 秒的时间间隔，而逗号表示其前后的两次输出之间的时间间隔可以忽略</strong>，代码实际运行的结果该如何描述？</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 选项</span></span><br><span class="line">A. <span class="number">5</span> -&gt; <span class="number">5</span> -&gt; <span class="number">5</span> -&gt; <span class="number">5</span> -&gt; <span class="number">5</span>	即每个 <span class="number">5</span> 之间都有 <span class="number">1</span> 秒的时间间隔</span><br><span class="line">B. <span class="number">5</span> -&gt; <span class="number">5</span>, <span class="number">5</span>, <span class="number">5</span>, <span class="number">5</span>, <span class="number">5</span>		即第 <span class="number">1</span> 个 <span class="number">5</span> 直接输出，<span class="number">1</span> 秒之后，输出 <span class="number">5</span> 个 <span class="number">5</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>答案：B</p>
-</li>
-<li>解析：setTimeout会将传入的方法移至下一js队列，并等待相应时间后触发（本题中为1s）。所以当前队列最后一行console先输出一个5，进入下一队列，等待1s后，4个定时器几乎同时输出结果，全部为5</li>
-</ul>
-<h3 id="追问2"><a href="#追问2" class="headerlink" title="追问2"></a>追问2</h3><ul>
-<li>如果期望代码的输出变成：5 -&gt; 0, 1, 2, 3, 4，该怎么改造代码？</li>
-<li><p>方法1</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 知识点：闭包</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">    (<span class="function"><span class="keyword">function</span>(<span class="params">j</span>) </span>&#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(j);</span><br><span class="line">        &#125;, <span class="number">1000</span>);</span><br><span class="line">    &#125;)(i);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="built_in">console</span>.log(i);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>方法2</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 知识点：函数参数按值传递</span></span><br><span class="line"><span class="keyword">var</span> output = <span class="function"><span class="keyword">function</span> (<span class="params">i</span>) </span>&#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(i);</span><br><span class="line">    &#125;, <span class="number">1000</span>);</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">    output(i);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(i);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>方法3</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 知识点：setTimeout api</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params">j</span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(j);</span><br><span class="line">    &#125;, <span class="number">1000</span>, i);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(i);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>方法4（如果你的答案是这个，只能算对一半）</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(i);</span><br><span class="line">    &#125;, <span class="number">1000</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 运行至此会报错，因为 let i 只在自己的块级作用域内生效。</span></span><br><span class="line"><span class="built_in">console</span>.log(i);</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h2 id="第二题"><a href="#第二题" class="headerlink" title="第二题"></a>第二题</h2><h3 id="原始题目-1"><a href="#原始题目-1" class="headerlink" title="原始题目"></a>原始题目</h3><ul>
-<li><p>题干</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">'global'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">'local'</span>,</span><br><span class="line">    foo: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = <span class="string">'foo'</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.name;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;       </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(obj.foo().call(<span class="keyword">this</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment">// 选项</span></span><br><span class="line">A. global  </span><br><span class="line">B. local</span><br><span class="line">C. foo</span><br><span class="line">D. undefined</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>答案：A</p>
-</li>
-<li>解析：call中的this指向obj.foo()的返回值，是一个匿名函数，该函数中并没有name这个变量，沿着作用域链向上解析到达全局环境，所以返回全局变量中的name，即’global’。看一个更容易理解的等价变形：<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">obj.foo().call(<span class="keyword">this</span>) </span><br><span class="line">=&gt;</span><br><span class="line"><span class="keyword">var</span> xxx = obj.foo();</span><br><span class="line">xxx.call(<span class="keyword">this</span>);</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="追问1-1"><a href="#追问1-1" class="headerlink" title="追问1"></a>追问1</h3><ul>
-<li><p>题干</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">'global'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">'local'</span>,</span><br><span class="line">    foo: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = <span class="string">'foo'</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.name;</span><br><span class="line">        &#125;.bind(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(obj.foo().call(<span class="keyword">this</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment">// 选项</span></span><br><span class="line">A. global  </span><br><span class="line">B. local</span><br><span class="line">C. foo</span><br><span class="line">D. undefined</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>答案：C</p>
-</li>
-<li>解析：由于return的function中用了bind，所以相当于固定了this，外边再call什么进来，也只是碍眼法。如果还是不理解，看一个更容易理解的等价变形：<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">'global'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name : <span class="string">'obj'</span>,</span><br><span class="line">    foo : <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">var</span> that = <span class="keyword">this</span>;</span><br><span class="line">        <span class="keyword">this</span>.name = <span class="string">'foo'</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">            <span class="keyword">return</span> that.name;</span><br><span class="line">        &#125; </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(obj.foo().call(<span class="keyword">this</span>))</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="追问2-1"><a href="#追问2-1" class="headerlink" title="追问2"></a>追问2</h3><ul>
-<li><p>题干</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">'global'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">'local'</span>,</span><br><span class="line">    foo: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = <span class="string">'foo'</span>;</span><br><span class="line">    &#125;.bind(<span class="built_in">window</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> bar = <span class="keyword">new</span> obj.foo();</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(bar.name, <span class="built_in">window</span>.name);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 选项</span></span><br><span class="line">A. global global  </span><br><span class="line">B. foo global</span><br><span class="line">C. local global</span><br><span class="line">D. local foo</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>答案：B</p>
-</li>
-<li>解析：<ul>
-<li>先复习下 new 调用：绑定到新创建的对象，注意：显示return函数或对象，返回值不是新创建的对象，而是显式返回的函数或对象。</li>
-<li>new 对 this 影响的优先级高于bind，obj.foo虽然通过bind绑定了this指向为window，但在使用new调用时，this 仍然指向以obj.foo为构造函数的实例。</li>
-</ul>
-</li>
-</ul>
-<h2 id="第三题"><a href="#第三题" class="headerlink" title="第三题"></a>第三题</h2><h3 id="原始题目-2"><a href="#原始题目-2" class="headerlink" title="原始题目"></a>原始题目</h3><ul>
-<li><p>题干</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fun</span>(<span class="params">n,o</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(o)</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        fun: <span class="function"><span class="keyword">function</span>(<span class="params">m</span>)</span>&#123;</span><br><span class="line">            <span class="keyword">return</span> fun(m,n);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> a = fun(<span class="number">0</span>);  a.fun(<span class="number">1</span>);  a.fun(<span class="number">2</span>);  a.fun(<span class="number">3</span>);	<span class="comment">// undefined,?,?,?</span></span><br><span class="line"><span class="keyword">var</span> b = fun(<span class="number">0</span>).fun(<span class="number">1</span>).fun(<span class="number">2</span>).fun(<span class="number">3</span>);			<span class="comment">// undefined,?,?,?</span></span><br><span class="line"><span class="keyword">var</span> c = fun(<span class="number">0</span>).fun(<span class="number">1</span>);  c.fun(<span class="number">2</span>);  c.fun(<span class="number">3</span>);	        <span class="comment">// undefined,?,?,?</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 问:三行a,b,c的输出分别是什么？</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>答案：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">第一行: <span class="literal">undefined</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span></span><br><span class="line">第二行: <span class="literal">undefined</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span></span><br><span class="line">第三行: <span class="literal">undefined</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>解析：</p>
-<ul>
-<li>重点在于理清题干中三个fun函数的关系是什么？<ul>
-<li>① <code>fun (n, o)</code>: 第一个fun函数，属于标准具名函数声明，是新创建的函数，他的返回值是一个对象字面量表达式，属于一个新的object。</li>
-<li>② <code>{}.fun</code>: 这个新的object内部包含一个也叫fun的属性，属于匿名函数表达式，即fun这个属性中存放的是一个新创建匿名函数表达式。第一个fun函数与第二个fun函数不相同，均为新创建的函数。</li>
-<li>③ <code>fun (m, n)</code>: 匿名函数中引用的fun，在函数内部作用域找不到fun的声明，会向上到外部环境（全局）找到fun的声明。故此第三个fun函数引用的是第一个fun函数</li>
-</ul>
-</li>
-<li>理清了三个fun函数就好理解了（下面用fun①, fun②, fun③分别表示上述三个fun函数，以防混淆）：<ul>
-<li><strong>第一行：</strong>这里的a是<code>fun(0)</code>返回的一个对象，<code>a.fun</code>通过闭包引用着<code>fun(0)</code>的第一个参数0，作为内部fun③的形参n，所以<code>a.fun</code>这个匿名函数中的形参n无论被调用几次都是0。上文讲过，fun③引用的是fun①，fun③的形参n对应fun①的形参<code>o</code>，所以三次输出的<code>o</code>都为0。</li>
-<li><strong>第二行：</strong>这行中<code>fun(0).fun(1)</code>的输出与第一行是一样是0，相当于一个等价变形。不同之处在于接下来<code>.fun(2).fun(3)</code>使用了 <code>.</code> 运算符进行尾调用，每次尾调用都形成新的闭包并被下次调用引用，形参<code>o</code>随之更新（更新过程为: <code>m -&gt; n -&gt; o</code> ），所以每次调用fun输出的<code>o</code>即为上次调用传入的<code>m</code>，结果为0，1，2。</li>
-<li><strong>第三行：</strong>理解了前两行，第三行为什么会这样输出相信你已经明白了，就是一，二行的结合。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
+            <p>
+              
+阅读本文需15分钟，可以学习：
 
+
+强化js基础
+检验自己对闭包, this指向的理解  
+
+本文中题目都在非严格模式下执行
+第一题原始题目
+题干
+for (var i = 0; i &lt; 5; i++) &#123;    setTimeout(function() &#123;      
+              ...
+            </p>
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/02/15/closure/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -633,102 +561,28 @@
       
         
           
-            <blockquote>
-<p>阅读本文需10分钟，可以了解：</p>
-<ol>
-<li>使用chrome performance进行性能分析的方式</li>
-<li>前端长列表渲染的解决方案</li>
-</ol>
-</blockquote>
-<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>本文是记录了一个页面性能问题的排查和解决过程。起因是在做公司项目时，在一个页面中，发现编辑器中快速输入出现卡顿，影响用户体验。如图：<br><img src="https://ws4.sinaimg.cn/large/006tNc79ly1fzxmfhkj3cj31h20u0aba.jpg" alt="rds_SQL编辑器卡顿"></p>
-<h2 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h2><h3 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h3><ul>
-<li>在SQL编辑器卡顿状态下，尝试在编辑器下方备注栏快速输入，也有卡顿现象。</li>
-<li>清除页面中其他元素，只保留SQL编辑器，再次输入发现没有卡顿。</li>
-<li>由以上两点可排除编辑器（项目中使用的codemirror）自身问题。</li>
-<li>本项目使用vue技术栈。该页面中deep watch了一些复杂对象，怀疑是它影响了性能，将其优化为不使用deep，发现编辑器依然卡顿，说明watch deep不是核心问题</li>
-<li>发现左侧sql table列表节点过多（300+），将该列表节点减少，发现卡顿有明显好转。猜想因为DOM节点过多，并且有大量监听器绑定，影响vue渲染速度。</li>
-</ul>
-<h3 id="页面性能分析"><a href="#页面性能分析" class="headerlink" title="页面性能分析"></a>页面性能分析</h3><p>接着使用chrome performance对页面性能分析，在record期间进行了如下操作：<br><code>打开空页面 -&gt; 选中一个包含300+个表的db（左侧渲染出大量table节点） -&gt; 尝试快速输入，发现卡顿 -&gt; 切换到一个空db（清空table节点）-&gt; 尝试快速输入，不再卡顿 -&gt; 再次切换回包含大量表的db -&gt; 快速输入，再次出现卡顿。</code><br>得到如下分析图：<br><img src="https://ws1.sinaimg.cn/large/006tNc79gy1fzgabthgkcj31hc0qego6.jpg" alt="rds_性能分析记录1"></p>
-<p>图中包含大量信息，这里主要关注红框部分：</p>
-<ul>
-<li>标记1：选择db，页面渲染300+table节点的list，nodes, listeners, js heap骤增（可以看到节点数高达7000+而不是300左右，因为每个列表item是一个组件，内部还包含众多dom节点，且该记录包含整个页面所有dom节点）</li>
-<li>标记2：在sql中快速输入字符，发现keypress的handler了处理缓慢，每次时长达120+ms。下图是放大标记2的内容，事件右上的红色三角标记，代表chrome认为这个function处理速度过慢<br><img src="https://ws1.sinaimg.cn/large/006tNc79ly1fzxnjwk1s2j30v40dsaan.jpg" alt="rds_性能分析记录2"></li>
-<li>标记3：可以看到标记三处JS进行了一次Minor GC恢复了一些内存，大量的dom nodes和listeners已经超出新生代内存空间进入老生代内存，Minor GC无法释放。</li>
-<li>在标记2~3左右，我们切换了db，页面不再渲染这些dom nodes，卡顿现象消失</li>
-<li>标记4：切换db一段时间后，JS进行了Major GC，nodes, listeners, js heap占用全部大幅降低</li>
-<li>标记5：再次切换回大列表db，又回到了标记1时的状态</li>
-</ul>
-<p>通过性能分析，可以验证，确实是在table列表节点过多时会影响整个页面性能，导致编辑器输入卡顿。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><blockquote>
-<p>本章简易demo参考自<a href="https://zhuanlan.zhihu.com/p/26022258" target="_blank" rel="noopener">聊聊前端开发中的长列表</a>，感谢@Furybean</p>
-</blockquote>
-<h3 id="滚动加载"><a href="#滚动加载" class="headerlink" title="滚动加载"></a>滚动加载</h3><ul>
-<li>思路：页面只渲染部分部分dom，在用户向下滚动时陆续加载后续dom</li>
-<li>使用前提：<ul>
-<li>PM接受这种形式的列表，某些场景用户体验不太好。</li>
-<li>适用于无限加载的需求，如微博列表</li>
-</ul>
-</li>
-<li><p>简易demo(vue)</p>
-  <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"lazy-list"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"lazy-render-list-item"</span> <span class="attr">v-for</span>=<span class="string">"item in data"</span>&gt;</span>&#123;&#123; item &#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="undefined">.lazy-render-list &#123;</span></span><br><span class="line"><span class="undefined">    border: 1px solid #666;</span></span><br><span class="line"><span class="undefined">&#125;</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined">.lazy-render-list-item &#123;</span></span><br><span class="line"><span class="undefined">    padding: 5px;</span></span><br><span class="line"><span class="undefined">    color: #666;</span></span><br><span class="line"><span class="undefined">    height: 30px;</span></span><br><span class="line"><span class="undefined">    line-height: 30px;</span></span><br><span class="line"><span class="undefined">    box-sizing: border-box;</span></span><br><span class="line"><span class="undefined">&#125;</span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span></span><br><span class="line"><span class="javascript">    name: <span class="string">'lazy-render-list'</span>,</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined">    data() &#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">const</span> count = <span class="number">40</span>;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">const</span> data = [];</span></span><br><span class="line"><span class="javascript">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</span></span><br><span class="line"><span class="undefined">        data.push(i);</span></span><br><span class="line"><span class="undefined">    &#125;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">return</span> &#123;</span></span><br><span class="line"><span class="undefined">        count,</span></span><br><span class="line"><span class="undefined">        data</span></span><br><span class="line"><span class="undefined">    &#125;;</span></span><br><span class="line"><span class="undefined">    &#125;,</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined">    mounted() &#123;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">window</span>.onscroll = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">const</span> maxScrollTop = <span class="built_in">Math</span>.max(<span class="built_in">document</span>.body.scrollHeight, <span class="built_in">document</span>.documentElement.scrollHeight) - <span class="built_in">window</span>.innerHeight;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">const</span> currentScrollTop = <span class="built_in">Math</span>.max(<span class="built_in">document</span>.documentElement.scrollTop, <span class="built_in">document</span>.body.scrollTop);</span></span><br><span class="line"><span class="javascript">            <span class="keyword">if</span> (maxScrollTop - currentScrollTop &lt; <span class="number">20</span>) &#123;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">const</span> count = <span class="keyword">this</span>.count;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">for</span> (<span class="keyword">let</span> i = count; i &lt; count + <span class="number">40</span>; i++) &#123;</span></span><br><span class="line"><span class="javascript">                <span class="keyword">this</span>.data.push(i);</span></span><br><span class="line"><span class="undefined">            &#125;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">this</span>.count = count + <span class="number">40</span>;</span></span><br><span class="line"><span class="undefined">            &#125;</span></span><br><span class="line"><span class="undefined">        &#125;;</span></span><br><span class="line"><span class="undefined">    &#125;</span></span><br><span class="line"><span class="undefined">&#125;;</span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>缺陷</p>
-<ul>
-<li>前端搜索受影响：项目中有目前使用前端搜索，如果使用该方案，需要改为后端搜索。若数据量不大也可以在前端保存全量数据做前端搜索，滚动加载只负责渲染。</li>
-<li>用户持续向下滚动：难免列表越来越大，最终达到性能瓶颈，依然会造成输入卡顿。</li>
-<li>综上：<strong>滚动加载方案不适用于本项目</strong></li>
-</ul>
-</li>
-</ul>
-<h3 id="可视区渲染"><a href="#可视区渲染" class="headerlink" title="可视区渲染"></a>可视区渲染</h3><ul>
-<li>思路：仅渲染视图范围内dom，移除不在视图内的dom。如图：<br><img src="https://ws4.sinaimg.cn/large/006tNc79gy1fzgaajkwtag31qi0kae81.gif" alt="rds_可视区渲染"></li>
-<li>使用前提：<ul>
-<li>每个数据的展现形式的高度最好一致（不然计算困难）</li>
-<li>一次需要加载的数据量比较大</li>
-<li>滚动条需要挂载在一个固定高度的区域</li>
-</ul>
-</li>
-<li><p>简易demo（vue）</p>
-  <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"list-view"</span> @<span class="attr">scroll</span>=<span class="string">"handleScroll($event)"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"list-view-phantom"</span> <span class="attr">:style</span>=<span class="string">"&#123; height: data.length * 30 + 'px' &#125;"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">v-el:content</span> <span class="attr">class</span>=<span class="string">"list-view-content"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"list-view-item"</span> <span class="attr">v-for</span>=<span class="string">"item in visibleData"</span>&gt;</span>&#123;&#123; item.value &#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">​</span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="undefined">.list-view &#123;</span></span><br><span class="line"><span class="undefined">    height: 400px;</span></span><br><span class="line"><span class="undefined">    overflow: auto;</span></span><br><span class="line"><span class="undefined">    position: relative;</span></span><br><span class="line"><span class="undefined">    border: 1px solid #666;</span></span><br><span class="line"><span class="undefined">&#125;</span></span><br><span class="line"><span class="undefined">​</span></span><br><span class="line"><span class="undefined">.list-view-phantom &#123;</span></span><br><span class="line"><span class="undefined">    position: absolute;</span></span><br><span class="line"><span class="undefined">    left: 0;</span></span><br><span class="line"><span class="undefined">    top: 0;</span></span><br><span class="line"><span class="undefined">    right: 0;</span></span><br><span class="line"><span class="undefined">    z-index: -1;</span></span><br><span class="line"><span class="undefined">&#125;</span></span><br><span class="line"><span class="undefined">​</span></span><br><span class="line"><span class="undefined">.list-view-content &#123;</span></span><br><span class="line"><span class="undefined">    left: 0;</span></span><br><span class="line"><span class="undefined">    right: 0;</span></span><br><span class="line"><span class="undefined">    top: 0;</span></span><br><span class="line"><span class="undefined">    position: absolute;</span></span><br><span class="line"><span class="undefined">&#125;</span></span><br><span class="line"><span class="undefined">​</span></span><br><span class="line"><span class="undefined">.list-view-item &#123;</span></span><br><span class="line"><span class="undefined">    padding: 5px;</span></span><br><span class="line"><span class="undefined">    color: #666;</span></span><br><span class="line"><span class="undefined">    height: 30px;</span></span><br><span class="line"><span class="undefined">    line-height: 30px;</span></span><br><span class="line"><span class="undefined">    box-sizing: border-box;</span></span><br><span class="line"><span class="undefined">&#125;</span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line">​</span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span></span><br><span class="line"><span class="undefined">    props: &#123;</span></span><br><span class="line"><span class="undefined">    data: &#123;</span></span><br><span class="line"><span class="javascript">        type: <span class="built_in">Array</span></span></span><br><span class="line"><span class="undefined">    &#125;,</span></span><br><span class="line"><span class="undefined">​</span></span><br><span class="line"><span class="undefined">    itemHeight: &#123;</span></span><br><span class="line"><span class="javascript">        type: <span class="built_in">Number</span>,</span></span><br><span class="line"><span class="javascript">        <span class="keyword">default</span>: <span class="number">30</span></span></span><br><span class="line"><span class="undefined">    &#125;</span></span><br><span class="line"><span class="undefined">    &#125;,</span></span><br><span class="line"><span class="undefined">​</span></span><br><span class="line"><span class="undefined">    ready() &#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">this</span>.visibleCount = <span class="built_in">Math</span>.ceil(<span class="keyword">this</span>.$el.clientHeight / <span class="keyword">this</span>.itemHeight);</span></span><br><span class="line"><span class="javascript">    <span class="keyword">this</span>.start = <span class="number">0</span>;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">this</span>.end = <span class="keyword">this</span>.start + <span class="keyword">this</span>.visibleCount;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">this</span>.visibleData = <span class="keyword">this</span>.data.slice(<span class="keyword">this</span>.start, <span class="keyword">this</span>.end);</span></span><br><span class="line"><span class="undefined">    &#125;,</span></span><br><span class="line"><span class="undefined">​</span></span><br><span class="line"><span class="undefined">    data() &#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">return</span> &#123;</span></span><br><span class="line"><span class="undefined">        start: 0,</span></span><br><span class="line"><span class="javascript">        end: <span class="literal">null</span>,</span></span><br><span class="line"><span class="javascript">        visibleCount: <span class="literal">null</span>,</span></span><br><span class="line"><span class="undefined">        visibleData: [],</span></span><br><span class="line"><span class="undefined">        scrollTop: 0</span></span><br><span class="line"><span class="undefined">    &#125;;</span></span><br><span class="line"><span class="undefined">    &#125;,</span></span><br><span class="line"><span class="undefined">​</span></span><br><span class="line"><span class="undefined">    methods: &#123;</span></span><br><span class="line"><span class="undefined">    handleScroll(event) &#123;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">const</span> scrollTop = <span class="keyword">this</span>.$el.scrollTop;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">const</span> fixedScrollTop = scrollTop - scrollTop % <span class="number">30</span>;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">this</span>.$els.content.style.webkitTransform = <span class="string">`translate3d(0, <span class="subst">$&#123;fixedScrollTop&#125;</span>px, 0)`</span>;</span></span><br><span class="line"><span class="undefined">​</span></span><br><span class="line"><span class="javascript">        <span class="keyword">this</span>.start = <span class="built_in">Math</span>.floor(scrollTop / <span class="number">30</span>);</span></span><br><span class="line"><span class="javascript">        <span class="keyword">this</span>.end = <span class="keyword">this</span>.start + <span class="keyword">this</span>.visibleCount;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">this</span>.visibleData = <span class="keyword">this</span>.data.slice(<span class="keyword">this</span>.start, <span class="keyword">this</span>.end);</span></span><br><span class="line"><span class="undefined">    &#125;</span></span><br><span class="line"><span class="undefined">    &#125;</span></span><br><span class="line"><span class="undefined">&#125;;</span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>  了解代码中几个要点，便于理解：</p>
-<ul>
-<li>使用一个 phantom 元素来撑起整个这个列表，让列表的滚动条出现。</li>
-<li>列表里面使用变量 visibleData(Array 类型) 记录目前需要显示的所有数据。</li>
-<li>列表里面使用变量 visibleCount 记录可见区域最多显示多少条数据。</li>
-<li>列表里面使用变量 start、end 记录可见区域数据的开始和结束索引。</li>
-<li>在滚动的时候，修改真实显示区域的 transform: translate2d(0, y, 0)。</li>
-<li>const fixedScrollTop = scrollTop - scrollTop % 30; 之所以要减掉scrollTop % 是为了保证滚动的顺滑，否则如果直接用scrolltop，会把list-view-content永远固定在顶部。可以尝试把item高度调高，数量调小，更利于理解这里</li>
-</ul>
-</li>
-<li>缺陷<ul>
-<li>iOS 上 UIWebView 的 onscroll 事件并不能实时触发: 因为这个原因，你可能会发现无限滚动在移动端很常见，但是可见区域渲染并不常见</li>
-</ul>
-</li>
-<li>由于本项目符合可视区渲染的前提条件，且不需要支持移动端，故选用该方案。</li>
-</ul>
-<h3 id="相关工具"><a href="#相关工具" class="headerlink" title="相关工具"></a>相关工具</h3><blockquote>
-<p>简易demo还是存在一些瑕疵，生产环境中建议使用成熟的开源工具  </p>
-</blockquote>
-<ul>
-<li><a href="https://github.com/tangbc/vue-virtual-scroll-list#readme" target="_blank" rel="noopener">vue-virtual-scroll-list</a>：A vue component support big data list with high scroll performance.</li>
-<li><a href="https://github.com/ElemeFE/vue-infinite-scroll/" target="_blank" rel="noopener">vue-infinite-scroll</a>：An infinite scroll directive for vue.js.</li>
-<li><a href="https://github.com/NeXTs/Clusterize.js" target="_blank" rel="noopener">Clusterize.js</a>：Tiny vanilla JS plugin to display large data sets easily</li>
-<li><a href="https://github.com/bvaughn/react-virtualized" target="_blank" rel="noopener">react-virtualized</a>：React components for efficiently rendering large lists and tabular data </li>
-</ul>
-<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><h3 id="指标对比"><a href="#指标对比" class="headerlink" title="指标对比"></a>指标对比</h3><p><img src="https://ws2.sinaimg.cn/large/006tNc79ly1fzxqjfko30j317e0eegmf.jpg" alt="rds_指标对比"></p>
-<blockquote>
-<p>注：高性能是在当前机器上（mac pro）的处理速度，低性能为4x slowdown后的处理速度</p>
-</blockquote>
-<h3 id="优化后性能检测对比图"><a href="#优化后性能检测对比图" class="headerlink" title="优化后性能检测对比图"></a>优化后性能检测对比图</h3><p><img src="https://ws3.sinaimg.cn/large/006tNc79ly1fzxqlkege3j31hc0mpwgo.jpg" alt="rds_性能分析记录3"></p>
-<ul>
-<li>标记1：与之前标记1相同的db大列表渲染时段，可见各个指标占用（js heap，node，listeners）有明显下降</li>
-<li>标记2：keypress handler处理也不再有红色的性能警告</li>
-<li>标记3：同样的切换列表后的第一次GC回收过程，指标波动已远小于优化前</li>
-</ul>
-<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>通过指标对比表格，和优化后的分析图可以看出，使用了可视区渲染优化后，各项指标都有了明显好转。</p>
-<h2 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h2><p>做这次优化时，脑海中有“只渲染视图区域内容，移除视野外dom”的模糊想法，Google一下，果然已有前人实现了这个思路，原来叫“可视区域渲染”，并且还有了不少开源库。赶紧借此机会，深入学习下长列表渲染的几种优化方式。同时，对于chrome performance的使用，我了解的还比较浅，文中有什么错误，欢迎指正。如果你也遇到类似问题，希望这篇文章，能给你带来一些帮助~</p>
+            <p>
+              
+阅读本文需10分钟，可以了解：
 
+使用chrome performance进行性能分析的方式
+前端长列表渲染的解决方案
+
+
+背景本文是记录了一个页面性能问题的排查和解决过程。起因是在做公司项目时，在一个页面中，发现编辑器中快速输入出现卡顿，影响用户体验。如图：
+问题排查问题定位
+在SQL编
+              ...
+            </p>
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/02/07/rds-long-list/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -881,17 +735,19 @@
       
         
           
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
+            <p>
+              Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in 
+              ...
+            </p>
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/02/06/hello-world/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -1046,15 +902,9 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
 
 
 
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.7.0</div>
 
 
 
