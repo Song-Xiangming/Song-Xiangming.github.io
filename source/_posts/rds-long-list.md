@@ -55,7 +55,7 @@ comments: true
     - PM接受这种形式的列表，某些场景用户体验不太好。
     - 适用于无限加载的需求，如微博列表
 - 简易demo(vue)
-    ```
+    ```html
     <template>
         <div class="lazy-list">
             <div class="lazy-render-list-item" v-for="item in data">{{ item }}</div>
@@ -122,14 +122,14 @@ comments: true
     - 一次需要加载的数据量比较大
     - 滚动条需要挂载在一个固定高度的区域
 - 简易demo（vue）
-    ```
+    ```html
     <template>
-    <div class="list-view" @scroll="handleScroll($event)">
-        <div class="list-view-phantom" :style="{ height: data.length * 30 + 'px' }"></div>
-        <div v-el:content class="list-view-content">
-        <div class="list-view-item" v-for="item in visibleData">{{ item.value }}</div>
+        <div class="list-view" @scroll="handleScroll($event)">
+            <div class="list-view-phantom" :style="{ height: data.length * 30 + 'px' }"></div>
+            <div v-el:content class="list-view-content">
+            <div class="list-view-item" v-for="item in visibleData">{{ item.value }}</div>
+            </div>
         </div>
-    </div>
     </template>
     ​
     <style>
