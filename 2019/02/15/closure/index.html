@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="阅读本文需15分钟，可以学习：   强化js基础 检验自己对闭包, this指向的理解    本文中题目都在非严格模式下执行 第一题原始题目 题干 123456789101112for (var i = 0; i &amp;lt; 5; i++) &amp;#123;    setTimeout(function() &amp;#123;        console.log(i);    &amp;#125;, 1000);">
+<meta name="keywords" content="js,基础">
+<meta property="og:type" content="article">
+<meta property="og:title" content="三道题增强JS基础">
+<meta property="og:url" content="http://yoursite.com/2019/02/15/closure/index.html">
+<meta property="og:site_name" content="无花师兄的小院">
+<meta property="og:description" content="阅读本文需15分钟，可以学习：   强化js基础 检验自己对闭包, this指向的理解    本文中题目都在非严格模式下执行 第一题原始题目 题干 123456789101112for (var i = 0; i &amp;lt; 5; i++) &amp;#123;    setTimeout(function() &amp;#123;        console.log(i);    &amp;#125;, 1000);">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-02-19T09:32:57.272Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="三道题增强JS基础">
+<meta name="twitter:description" content="阅读本文需15分钟，可以学习：   强化js基础 检验自己对闭包, this指向的理解    本文中题目都在非严格模式下执行 第一题原始题目 题干 123456789101112for (var i = 0; i &amp;lt; 5; i++) &amp;#123;    setTimeout(function() &amp;#123;        console.log(i);    &amp;#125;, 1000);">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/02/15/closure/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>三道题增强JS基础 | 无花师兄的小院</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">无花师兄的小院</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/15/closure/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="无花">
+      <meta itemprop="description" content="前端，博客">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="无花师兄的小院">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">三道题增强JS基础
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-02-15 16:21:35" itemprop="dateCreated datePublished" datetime="2019-02-15T16:21:35+08:00">2019-02-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-02-19 17:32:57" itemprop="dateModified" datetime="2019-02-19T17:32:57+08:00">2019-02-19</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>阅读本文需15分钟，可以学习：</p>
+</blockquote>
+<ol>
+<li>强化js基础</li>
+<li>检验自己对闭包, this指向的理解  </li>
+</ol>
+<p><strong>本文中题目都在非严格模式下执行</strong></p>
+<h2 id="第一题"><a href="#第一题" class="headerlink" title="第一题"></a>第一题</h2><h3 id="原始题目"><a href="#原始题目" class="headerlink" title="原始题目"></a>原始题目</h3><ul>
+<li><p>题干</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">for (var i = 0; i &lt; 5; i++) &#123;</span><br><span class="line">    setTimeout(function() &#123;</span><br><span class="line">        console.log(i);</span><br><span class="line">    &#125;, 1000);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">console.log(i);</span><br><span class="line"></span><br><span class="line">// 选项</span><br><span class="line">A. 0,1,2,3,4,5</span><br><span class="line">B. 5,0,1,2,3,4</span><br><span class="line">C. 5,5,5,5,5,5</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>答案：C</p>
+</li>
+<li>解析：setTimeout会将传入的方法移至下一js队列执行，当前队列执行完for循环已结束，增长到5，所以最终输出全部是5</li>
+</ul>
+<h3 id="追问1"><a href="#追问1" class="headerlink" title="追问1"></a>追问1</h3><ul>
+<li><p>如果我们约定，<strong>用箭头表示其前后的两次输出之间有 1 秒的时间间隔，而逗号表示其前后的两次输出之间的时间间隔可以忽略</strong>，代码实际运行的结果该如何描述？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 选项</span><br><span class="line">A. 5 -&gt; 5 -&gt; 5 -&gt; 5 -&gt; 5	即每个 5 之间都有 1 秒的时间间隔</span><br><span class="line">B. 5 -&gt; 5, 5, 5, 5, 5		即第 1 个 5 直接输出，1 秒之后，输出 5 个 5</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>答案：B</p>
+</li>
+<li>解析：setTimeout会将传入的方法移至下一js队列，并等待相应时间后触发（本题中为1s）。所以当前队列最后一行console先输出一个5，进入下一队列，等待1s后，4个定时器几乎同时输出结果，全部为5</li>
+</ul>
+<h3 id="追问2"><a href="#追问2" class="headerlink" title="追问2"></a>追问2</h3><ul>
+<li>如果期望代码的输出变成：5 -&gt; 0, 1, 2, 3, 4，该怎么改造代码？</li>
+<li><p>方法1</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 知识点：闭包</span><br><span class="line">for (var i = 0; i &lt; 5; i++) &#123;</span><br><span class="line">    (function(j) &#123;</span><br><span class="line">    setTimeout(function() &#123;</span><br><span class="line">        console.log(j);</span><br><span class="line">        &#125;, 1000);</span><br><span class="line">    &#125;)(i);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">console.log(i);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>方法2</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// 知识点：函数参数按值传递</span><br><span class="line">var output = function (i) &#123;</span><br><span class="line">    setTimeout(function() &#123;</span><br><span class="line">        console.log(i);</span><br><span class="line">    &#125;, 1000);</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line">for (var i = 0; i &lt; 5; i++) &#123;</span><br><span class="line">    output(i);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(i);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>方法3</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 知识点：setTimeout api</span><br><span class="line">for (var i = 0; i &lt; 5; i++) &#123;</span><br><span class="line">    setTimeout(function(j) &#123;</span><br><span class="line">        console.log(j);</span><br><span class="line">    &#125;, 1000, i);</span><br><span class="line">&#125;</span><br><span class="line">console.log(i);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>方法4（如果你的答案是这个，只能算对一半）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">for (let i = 0; i &lt; 5; i++) &#123;</span><br><span class="line">    setTimeout(function() &#123;</span><br><span class="line">        console.log(i);</span><br><span class="line">    &#125;, 1000);</span><br><span class="line">&#125;</span><br><span class="line">// 运行至此会报错，因为 let i 只在自己的块级作用域内生效。</span><br><span class="line">console.log(i);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="第二题"><a href="#第二题" class="headerlink" title="第二题"></a>第二题</h2><h3 id="原始题目-1"><a href="#原始题目-1" class="headerlink" title="原始题目"></a>原始题目</h3><ul>
+<li><p>题干</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">var name = &apos;global&apos;;</span><br><span class="line"></span><br><span class="line">var obj = &#123;</span><br><span class="line">    name: &apos;local&apos;,</span><br><span class="line">    foo: function()&#123;</span><br><span class="line">        this.name = &apos;foo&apos;;</span><br><span class="line">        return function()&#123;</span><br><span class="line">            return this.name;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;       </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(obj.foo().call(this))</span><br><span class="line"></span><br><span class="line">// 选项</span><br><span class="line">A. global  </span><br><span class="line">B. local</span><br><span class="line">C. foo</span><br><span class="line">D. undefined</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>答案：A</p>
+</li>
+<li>解析：call中的this指向obj.foo()的返回值，是一个匿名函数，该函数中并没有name这个变量，沿着作用域链向上解析到达全局环境，所以返回全局变量中的name，即’global’。看一个更容易理解的等价变形：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">obj.foo().call(this) </span><br><span class="line">=&gt;</span><br><span class="line">var xxx = obj.foo();</span><br><span class="line">xxx.call(this);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="追问1-1"><a href="#追问1-1" class="headerlink" title="追问1"></a>追问1</h3><ul>
+<li><p>题干</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">var name = &apos;global&apos;;</span><br><span class="line"></span><br><span class="line">var obj = &#123;</span><br><span class="line">    name: &apos;local&apos;,</span><br><span class="line">    foo: function()&#123;</span><br><span class="line">        this.name = &apos;foo&apos;;</span><br><span class="line">        return function()&#123;</span><br><span class="line">            return this.name;</span><br><span class="line">        &#125;.bind(this);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(obj.foo().call(this))</span><br><span class="line"></span><br><span class="line">// 选项</span><br><span class="line">A. global  </span><br><span class="line">B. local</span><br><span class="line">C. foo</span><br><span class="line">D. undefined</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>答案：C</p>
+</li>
+<li>解析：由于return的function中用了bind，所以相当于固定了this，外边再call什么进来，也只是碍眼法。如果还是不理解，看一个更容易理解的等价变形：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">var name = &apos;global&apos;;</span><br><span class="line"></span><br><span class="line">var obj = &#123;</span><br><span class="line">    name : &apos;obj&apos;,</span><br><span class="line">    foo : function()&#123;</span><br><span class="line">        var that = this;</span><br><span class="line">        this.name = &apos;foo&apos;;</span><br><span class="line">        return function()&#123;</span><br><span class="line">            return that.name;</span><br><span class="line">        &#125; </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(obj.foo().call(this))</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="追问2-1"><a href="#追问2-1" class="headerlink" title="追问2"></a>追问2</h3><ul>
+<li><p>题干</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">var name = &apos;global&apos;;</span><br><span class="line"></span><br><span class="line">var obj = &#123;</span><br><span class="line">    name: &apos;local&apos;,</span><br><span class="line">    foo: function()&#123;</span><br><span class="line">        this.name = &apos;foo&apos;;</span><br><span class="line">    &#125;.bind(window)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var bar = new obj.foo();</span><br><span class="line"></span><br><span class="line">console.log(bar.name, window.name);</span><br><span class="line"></span><br><span class="line">// 选项</span><br><span class="line">A. global global  </span><br><span class="line">B. foo global</span><br><span class="line">C. local global</span><br><span class="line">D. local foo</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>答案：B</p>
+</li>
+<li>解析：<ul>
+<li>先复习下 new 调用：绑定到新创建的对象，注意：显示return函数或对象，返回值不是新创建的对象，而是显式返回的函数或对象。</li>
+<li>new 对 this 影响的优先级高于bind，obj.foo虽然通过bind绑定了this指向为window，但在使用new调用时，this 仍然指向以obj.foo为构造函数的实例。</li>
+</ul>
+</li>
+</ul>
+<h2 id="第三题"><a href="#第三题" class="headerlink" title="第三题"></a>第三题</h2><h3 id="原始题目-2"><a href="#原始题目-2" class="headerlink" title="原始题目"></a>原始题目</h3><ul>
+<li><p>题干</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">function fun(n,o) &#123;</span><br><span class="line">    console.log(o)</span><br><span class="line">    return &#123;</span><br><span class="line">        fun: function(m)&#123;</span><br><span class="line">            return fun(m,n);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var a = fun(0);  a.fun(1);  a.fun(2);  a.fun(3);	// undefined,?,?,?</span><br><span class="line">var b = fun(0).fun(1).fun(2).fun(3);			// undefined,?,?,?</span><br><span class="line">var c = fun(0).fun(1);  c.fun(2);  c.fun(3);	        // undefined,?,?,?</span><br><span class="line"></span><br><span class="line">// 问:三行a,b,c的输出分别是什么？</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>答案：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">第一行: undefined,0,0,0</span><br><span class="line">第二行: undefined,0,1,2</span><br><span class="line">第三行: undefined,0,1,1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>解析：</p>
+<ul>
+<li>重点在于理清题干中三个fun函数的关系是什么？<ul>
+<li>① fun (n, o): 第一个fun函数，属于标准具名函数声明，是新创建的函数，他的返回值是一个对象字面量表达式，属于一个新的object。</li>
+<li>② {}.fun: 这个新的object内部包含一个也叫fun的属性，属于匿名函数表达式，即fun这个属性中存放的是一个新创建匿名函数表达式。第一个fun函数与第二个fun函数不相同，均为新创建的函数。</li>
+<li>③ fun (m, n): 匿名函数中引用的fun，在函数内部作用域找不到fun的声明，会向上到外部环境（全局）找到fun的声明。故此第三个fun函数引用的是第一个fun函数</li>
+</ul>
+</li>
+<li>理清了三个fun函数就好理解了（下面用fun①, fun②, fun③分别表示上述三个fun函数，以防混淆）：<ul>
+<li><strong>第一行：</strong>这里的a是fun(0)返回的一个对象，a.fun通过闭包引用着fun(0)的第一个参数0，作为内部fun③的形参n，所以a.fun这个匿名函数中的形参n无论被调用几次都是0。上文讲过，fun③引用的是fun①，fun③的形参n对应fun①的形参o，所以三次输出的o都为0。</li>
+<li><strong>第二行：</strong>这行中fun(0).fun(1)的输出与第一行是一样是0，相当于一个等价变形。不同之处在于接下来 .fun(2).fun(3) 使用了 . 运算符进行尾调用，每次尾调用都形成新的闭包并被下次调用引用，形参o随之更新（更新过程为: m -&gt; n -&gt; o ），所以每次调用fun输出的o即为上次调用传入的m，结果为0，1，2。</li>
+<li><strong>第三行：</strong>理解了前两行，第三行为什么会这样输出相信你已经明白了，就是一，二行的结合。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/img/wechatpay.jpg" alt="无花 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/img/alipay.jpg" alt="无花 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/js/" rel="tag"># js</a>
+          
+            <a href="/tags/基础/" rel="tag"># 基础</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/07/rds-long-list/" rel="next" title="长列表性能优化">
+                <i class="fa fa-chevron-left"></i> 长列表性能优化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">无花</p>
+              <p class="site-description motion-element" itemprop="description">前端，博客</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#第一题"><span class="nav-number">1.</span> <span class="nav-text">第一题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原始题目"><span class="nav-number">1.1.</span> <span class="nav-text">原始题目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#追问1"><span class="nav-number">1.2.</span> <span class="nav-text">追问1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#追问2"><span class="nav-number">1.3.</span> <span class="nav-text">追问2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二题"><span class="nav-number">2.</span> <span class="nav-text">第二题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原始题目-1"><span class="nav-number">2.1.</span> <span class="nav-text">原始题目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#追问1-1"><span class="nav-number">2.2.</span> <span class="nav-text">追问1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#追问2-1"><span class="nav-number">2.3.</span> <span class="nav-text">追问2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第三题"><span class="nav-number">3.</span> <span class="nav-text">第三题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原始题目-2"><span class="nav-number">3.1.</span> <span class="nav-text">原始题目</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">无花</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.7.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  
+    
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '519e3eacd89ca588c27c',
+    clientSecret: '1fe232197c0f57f3c3abddf328fc1a5ec4015cf5',
+    repo: 'xmasong.github.io',
+    owner: 'xmasong',
+    admin: ['xmasong'],
+    id: md5(location.pathname),
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
