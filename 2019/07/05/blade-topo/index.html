@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+<meta name="referrer" content="no-referrer">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="最近业务要实现一个拓扑图，之前接触数据可视化工具较少，尝试了多种相关实现工具，在此记录并总结。阅读本文可以了解：  常见拓扑图实现工具优劣势对比 通过一个例子，学习实现常见拓扑图的方式和小技巧   需求展示效果： hover 高亮链路效果： 要点  布局：节点组x轴分为四部分（可能不均分），y轴垂直居中，存在无连线的孤立节点 交互需求：鼠标hover时要高亮整条链路  技术选型拓扑图开发工具尝试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="拓扑图实现">
+<meta property="og:url" content="http://yoursite.com/2019/07/05/blade-topo/index.html">
+<meta property="og:site_name" content="无花师兄的小院">
+<meta property="og:description" content="最近业务要实现一个拓扑图，之前接触数据可视化工具较少，尝试了多种相关实现工具，在此记录并总结。阅读本文可以了解：  常见拓扑图实现工具优劣势对比 通过一个例子，学习实现常见拓扑图的方式和小技巧   需求展示效果： hover 高亮链路效果： 要点  布局：节点组x轴分为四部分（可能不均分），y轴垂直居中，存在无连线的孤立节点 交互需求：鼠标hover时要高亮整条链路  技术选型拓扑图开发工具尝试">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://ww1.sinaimg.cn/large/006tNc79ly1g4ozzh48d5j31tg0togq1.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/large/006tNc79ly1g4p010cos6j31jk0gs75r.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/large/006tNc79ly1g4p23ta3dej308u02a743.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/large/006tNc79ly1g4p2q47ustj307o042mxh.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/large/006tNc79ly1g4pz88a423j30gi04674f.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/large/006tNc79ly1g4q0bu1vlxj311w0f83zl.jpg">
+<meta property="og:updated_time" content="2019-07-06T05:38:01.050Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="拓扑图实现">
+<meta name="twitter:description" content="最近业务要实现一个拓扑图，之前接触数据可视化工具较少，尝试了多种相关实现工具，在此记录并总结。阅读本文可以了解：  常见拓扑图实现工具优劣势对比 通过一个例子，学习实现常见拓扑图的方式和小技巧   需求展示效果： hover 高亮链路效果： 要点  布局：节点组x轴分为四部分（可能不均分），y轴垂直居中，存在无连线的孤立节点 交互需求：鼠标hover时要高亮整条链路  技术选型拓扑图开发工具尝试">
+<meta name="twitter:image" content="http://ww1.sinaimg.cn/large/006tNc79ly1g4ozzh48d5j31tg0togq1.jpg">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/2019/07/05/blade-topo/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>拓扑图实现 | 无花师兄的小院</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">无花师兄的小院</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/05/blade-topo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="无花">
+      <meta itemprop="description" content="前端，博客">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="无花师兄的小院">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">拓扑图实现
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-05 15:04:37" itemprop="dateCreated datePublished" datetime="2019-07-05T15:04:37+08:00">2019-07-05</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-06 13:38:01" itemprop="dateModified" datetime="2019-07-06T13:38:01+08:00">2019-07-06</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">8.9k</span>
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">8 min</span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>最近业务要实现一个拓扑图，之前接触数据可视化工具较少，尝试了多种相关实现工具，在此记录并总结。阅读本文可以了解：</p>
+<ol>
+<li>常见拓扑图实现工具优劣势对比</li>
+<li>通过一个例子，学习实现常见拓扑图的方式和小技巧</li>
+</ol>
+</blockquote>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p><strong>展示效果：</strong><br><img src="http://ww1.sinaimg.cn/large/006tNc79ly1g4ozzh48d5j31tg0togq1.jpg" alt="blade_dbTopo_设计图1"></p>
+<p><strong>hover 高亮链路效果：</strong><br><img src="http://ww2.sinaimg.cn/large/006tNc79ly1g4p010cos6j31jk0gs75r.jpg" alt="blade_dbTopo_设计图2"></p>
+<p><strong>要点</strong></p>
+<ul>
+<li>布局：节点组x轴分为四部分（可能不均分），y轴垂直居中，存在无连线的孤立节点</li>
+<li>交互需求：鼠标hover时要高亮整条链路</li>
+</ul>
+<h2 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h2><h3 id="拓扑图开发工具尝试"><a href="#拓扑图开发工具尝试" class="headerlink" title="拓扑图开发工具尝试"></a>拓扑图开发工具尝试</h3><blockquote>
+<p>尝试顺序由上至下</p>
+</blockquote>
+<h4 id="Echarts"><a href="#Echarts" class="headerlink" title="Echarts"></a><a href="https://www.echartsjs.com/index.html" target="_blank" rel="noopener">Echarts</a></h4><ul>
+<li>尝试理由：<ul>
+<li>中文文档，上手容易</li>
+<li><a href="https://echarts.baidu.com/examples/editor.html?c=graph-simple" target="_blank" rel="noopener">关系图 - 节点图</a> 接近需求,封装功能全面，hover效果可以低成本实现</li>
+<li>可由开发者维护节点位置，方便处理孤立节点</li>
+</ul>
+</li>
+<li>放弃理由：<ul>
+<li>文字label不能扩大节点体积，导致连线会盖住文字，如图：<br>  <img src="http://ww2.sinaimg.cn/large/006tNc79ly1g4p23ta3dej308u02a743.jpg" alt="blade_dbTopo_echarts"><ul>
+<li>尝试解决方案1：文字放下方，本需求不适用（太丑）</li>
+<li>尝试解决方案2：<a href="https://www.npmjs.com/package/text-to-svg" target="_blank" rel="noopener">text-to-svg</a> ，让文字成为symbol的一部分<ul>
+<li>每个动态的text转svg，性能不好</li>
+<li>symbolSize的限制：会导致无论多长的文字都缩放到同样宽度</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="HighCharts"><a href="#HighCharts" class="headerlink" title="HighCharts"></a><a href="https://www.highcharts.com/" target="_blank" rel="noopener">HighCharts</a></h4><ul>
+<li>尝试理由：<ul>
+<li>svg版的echarts（也可以说：echarts是canvas版的highcharts），希望用灵活的svg解决echarts节点热区的问题</li>
+</ul>
+</li>
+<li>放弃理由：<ul>
+<li>甚至没有合适的关系图</li>
+</ul>
+</li>
+<li>备注：<ul>
+<li>HighCharts和Echarts 本质上是一类东西，跟 d3.js 等工具的维度不同。它们自带的图表类型能满足你最好，满足不了的话就只能自己造轮子了</li>
+</ul>
+</li>
+</ul>
+<h4 id="JTopo"><a href="#JTopo" class="headerlink" title="JTopo"></a><a href="http://www.jtopo.com/index.html" target="_blank" rel="noopener">JTopo</a></h4><ul>
+<li>尝试理由：<ul>
+<li>看名字就知道，专门用来绘制拓扑图，覆盖类型很广</li>
+<li>可由开发者维护节点位置，方便处理孤立节点</li>
+<li>上手容易，文档极其友好</li>
+</ul>
+</li>
+<li>放弃理由：<ul>
+<li>尝试绘制后发现，依然有echarts的问题，文字label不能扩大节点体积。根本问题还是节点的定制不够自由<div style="width: 200px;"><img src="http://ww1.sinaimg.cn/large/006tNc79ly1g4p2q47ustj307o042mxh.jpg" alt="blade_dbTopo_JTopo"></div></li>
+</ul>
+</li>
+<li>备注：<ul>
+<li>国人开发，轻量级的图表库，很推荐大家了解下</li>
+</ul>
+</li>
+</ul>
+<h4 id="Darge-d3"><a href="#Darge-d3" class="headerlink" title="Darge-d3"></a><a href="https://github.com/dagrejs/dagre-d3" target="_blank" rel="noopener">Darge-d3</a></h4><ul>
+<li>尝试理由：<ul>
+<li>基于d3的有向无环图绘制工具，相比d3较容易上手，不需要自己造轮子了</li>
+<li>给定节点间关系，可自动化生成拓扑图，无需维护节点坐标</li>
+</ul>
+</li>
+<li>放弃理由：<ul>
+<li>由于自动生成坐标，孤立的节点会和拓扑图并列（孤立节点被认为是另一张拓扑图），难以控制。</li>
+<li>如果要用它强行实现，要前端补充孤立节点的关系（仅用于绘制），再隐藏掉连线</li>
+</ul>
+</li>
+<li>备注：<ul>
+<li>自动化布局的功能很强大，对于没有孤立节点的需求，可以尝试。<a href="https://dagrejs.github.io/project/dagre-d3/latest/demo/sentence-tokenization.html" target="_blank" rel="noopener">看个Demo</a></li>
+</ul>
+</li>
+</ul>
+<h4 id="G6"><a href="#G6" class="headerlink" title="G6"></a><a href="https://www.yuque.com/antv/g6/quick-start" target="_blank" rel="noopener">G6</a></h4><ul>
+<li>尝试理由：<ul>
+<li>团队内有相关实现“故障大盘链路图”，很接近本需求</li>
+<li>插件化，官方没有的功能可以自己写插件实现</li>
+</ul>
+</li>
+<li>放弃理由：<ul>
+<li>和故障大盘开发者交流下，了解到有下面两个问题，故而没有尝试：<ul>
+<li>g6文档很少比d3还难学（指2.0的文档）</li>
+<li>孤立节点不好处理（当时主观的猜测g6的实现方式类似darge-d3，不能控制点的位置，实际并不是，可以自己布局）</li>
+</ul>
+</li>
+<li>应该检讨自己，听说有些坑就不去尝试，错过了一个好工具。最终使用JointJS实现了需求，现在回头再看g6文档，发现g6的3.0文档比2.0改善了不少，而且是中文文档，核心概念和Joint相似；插件化很强大，缺啥功能自己补~</li>
+</ul>
+</li>
+<li>备注：<ul>
+<li>G6的插件化可以做很多事，比如<ul>
+<li>借助dagre-d3来布局，还能利用插件把原本自动生成的折线改为直线等</li>
+<li>实现vueComponent插件，可以写vue组件节点，实现更复杂的样式和功能。<a href="https://resources.jointjs.com/tutorial/html-elements" target="_blank" rel="noopener">用Joint实现html element</a> 就比较繁琐</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="JointJS"><a href="#JointJS" class="headerlink" title="JointJS"></a><a href="https://resources.jointjs.com/" target="_blank" rel="noopener">JointJS</a></h4><ul>
+<li>尝试理由：<ul>
+<li>基于svg，高度自定义的element和link终于能满足需求了</li>
+<li>能够自己维护节点坐标，解决孤立节点的问题</li>
+<li>文档全面，社区资料不算少</li>
+</ul>
+</li>
+<li>放弃理由：<ul>
+<li>这次没有放弃，用它实现了需求</li>
+</ul>
+</li>
+<li>备注：<ul>
+<li>不要被它貌似收费的官网迷惑，Rappid的JointJS的收费升级版，而JointJS本身是开源免费的</li>
+<li>JointJS内置的交互工具也很强大，处理强交互的需求很合适，看看它的 <a href="https://resources.jointjs.com/demos" target="_blank" rel="noopener">Demo</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="JointJS-FAQ"><a href="#JointJS-FAQ" class="headerlink" title="JointJS FAQ"></a>JointJS FAQ</h3><ul>
+<li><strong>为啥不再试试其他的库，比如 d3.js ？</strong><ul>
+<li>时间紧，d3上手难度较高，原计划作为最后的防线，但在尝试到joint.js时发现可以满足需求，就没有选择d3及其他的库；</li>
+<li>但是d3确实是可以实现的，<a href="https://segmentfault.com/a/1190000015435525" target="_blank" rel="noopener">看个随便搜的Demo</a></li>
+</ul>
+</li>
+<li><strong>API看不懂，找不到：</strong>JointJS文档虽全，但是API目录结构和搜索的体验不太好。建议学习方式如下：<ul>
+<li>结合 jointjs-api 看 demo，如果在 api 中搜不到demo中的实现方法，去看下源码。如 org 图中new joint.shapes.org.Member，看似官方api，实际是自定义元素（custom elements）</li>
+<li>搜不到想要的功能，google一下，JointJS的社区讨论相对较多</li>
+</ul>
+</li>
+<li><strong>npm包ts类型不全：</strong><ul>
+<li>因为部分类型依赖 backbone，需要手动添加。surprise！解决方案：<a href="https://github.com/clientIO/joint/issues/797" target="_blank" rel="noopener">Incompatible TypeScript definitions in jointjs 2.0.1 #797</a></li>
+</ul>
+</li>
+<li><strong>想了解下JointJS核心概念</strong><ul>
+<li><strong>paper和graph</strong><ul>
+<li>paper即画布，图形将在paper上绘制</li>
+<li>graph即图形数据，一个graph可与多个paper绑定，对graph的修改会即时反映到paper上</li>
+</ul>
+</li>
+<li><strong>cellView和cell</strong><ul>
+<li>cellView: 视图元素，是paper的基本元素，用来处理UI交互，cellView可以通过.model属性获取它的cell</li>
+<li>cell: 图形元素，是graph的基本元素，用来存储图形元素数据，graph其实就是cell的集合</li>
+</ul>
+</li>
+<li><strong>link和element</strong><ul>
+<li>cell有两种类型，link是连线，element是节点，他们的视图元素对应为linkView和elementView</li>
+</ul>
+</li>
+<li><strong>source和target</strong><ul>
+<li>即连线的起点和终点</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="实现要点"><a href="#实现要点" class="headerlink" title="实现要点"></a>实现要点</h2><blockquote>
+<p>注：本文示例代码均为typescript</p>
+</blockquote>
+<h3 id="element-amp-link-样式实现"><a href="#element-amp-link-样式实现" class="headerlink" title="element &amp; link 样式实现"></a>element &amp; link 样式实现</h3><ul>
+<li><p><a href="https://resources.jointjs.com/docs/jointjs/v2.2/joint.html#dia.Cell.define" target="_blank" rel="noopener">Cell.define</a>：JointJS支持高度自定义的cell，element和link都是svg绘制的cell视图元素，大部分样式用svg attr结合api即可实现</p>
+</li>
+<li><p><strong>如何实现动态的element宽度？</strong></p>
+<ul>
+<li><p>由于svg的宽度不能像div那样根据内容自动撑开，这里我的解决方案</p>
+  <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 根据element内部String.length * 单个字符px + padding(留白和图片的宽度和)</span></span><br><span class="line">size: &#123; width: name.length * <span class="number">7.2</span> + <span class="number">20</span>, height: <span class="number">20</span> &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>你可能会问不同字符宽度不一样怎么办？</p>
+<ul>
+<li>使用等宽字体可解决，如下图：不等宽字体 (左)，等宽字体（右）<div style="width: 280px;"><img src="http://ww1.sinaimg.cn/large/006tNc79ly1g4pz88a423j30gi04674f.jpg" alt="blade_dbTopo_等宽字体"></div>
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="节点布局"><a href="#节点布局" class="headerlink" title="节点布局"></a>节点布局</h3><ul>
+<li><strong>实现节点组垂直居中思路：</strong><ul>
+<li>计算图整体高度totalHeight: gap * (nodeNum - 1)</li>
+<li>定位中心点，topNode, bottomNode：考虑nodeNum为奇数偶数节点两种情况<ul>
+<li>奇数<ul>
+<li>中心点/topNode/bottomNode：totalHeight / 2</li>
+</ul>
+</li>
+<li>偶数<ul>
+<li>中心点：totalHeight / 2</li>
+<li>topNode: totalHeight / 2 - gap / 2</li>
+<li>bottomNode: totalHeight / 2 + gap / 2</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>循环列表，依次更新topNode, bottomNode</li>
+</ul>
+</li>
+<li><p><strong>按上述思路计算Y坐标，上代码</strong></p>
+  <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 为满足绘制顶部分类label的需求，添加了offset偏移</span></span><br><span class="line">getNodeCoordY (maxHeight: <span class="built_in">number</span>, num: <span class="built_in">number</span>, gap: <span class="built_in">number</span>, offset: <span class="built_in">number</span> = <span class="number">80</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (num &lt; <span class="number">1</span>) <span class="keyword">return</span> [];</span><br><span class="line">    <span class="keyword">if</span> (gap * (num - <span class="number">1</span>) &gt; maxHeight - offset) &#123;</span><br><span class="line">        <span class="built_in">console</span>.error(<span class="string">'Node height exceeds maximum height~'</span>);</span><br><span class="line">        <span class="keyword">return</span> [];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> result = [];</span><br><span class="line">    <span class="keyword">let</span> top = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">let</span> bottom = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 未分配数量</span></span><br><span class="line">    <span class="keyword">let</span> leftNum = num;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定位中心点</span></span><br><span class="line">    <span class="keyword">if</span> (num % <span class="number">2</span> === <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">// (maxHeight - offset) / 2 + offset</span></span><br><span class="line">        top = bottom = (maxHeight + offset) / <span class="number">2</span>;</span><br><span class="line">        result.push(top);</span><br><span class="line">        leftNum -= <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// (maxHeight - offset) / 2 - gap / 2 + offset;</span></span><br><span class="line">        top = (maxHeight + offset - gap) / <span class="number">2</span>;</span><br><span class="line">        bottom = (maxHeight + offset + gap) / <span class="number">2</span>;</span><br><span class="line">        result.push(top);</span><br><span class="line">        result.push(bottom);</span><br><span class="line">        leftNum -= <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (leftNum &lt; <span class="number">1</span>) <span class="keyword">return</span> result;</span><br><span class="line">    <span class="comment">// 定位剩余点</span></span><br><span class="line">    <span class="keyword">let</span> toggle = <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; leftNum; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (toggle) &#123;</span><br><span class="line">        top = top - gap;</span><br><span class="line">        result.push(top);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        bottom = bottom + gap;</span><br><span class="line">        result.push(bottom);</span><br><span class="line">        &#125;</span><br><span class="line">        toggle = !toggle;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result.sort(<span class="function">(<span class="params">a, b</span>) =&gt;</span> a - b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>X坐标默认按num均分宽度，支持调整分配比例</strong></p>
+  <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">getNodeCoordX (maxWidth: <span class="built_in">number</span>, num: <span class="built_in">number</span>, proportion?: <span class="built_in">number</span>[], offset: <span class="built_in">number</span> = <span class="number">20</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (maxWidth &lt;= offset) <span class="keyword">return</span> [];</span><br><span class="line">    <span class="keyword">let</span> result = [];</span><br><span class="line">    <span class="keyword">const</span> gapNum = proportion ? proportion.reduce(<span class="function">(<span class="params">pre, curr</span>) =&gt;</span> pre + curr) : num;</span><br><span class="line">    <span class="keyword">const</span> gap = <span class="built_in">Math</span>.floor((maxWidth - offset) / gapNum);</span><br><span class="line">    <span class="comment">// 定位第一个点</span></span><br><span class="line">    <span class="keyword">let</span> start = offset;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; num; i++) &#123;</span><br><span class="line">        result.push(start);</span><br><span class="line">        start += proportion ? gap * proportion[i] : gap;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="实现-hover-高亮链路"><a href="#实现-hover-高亮链路" class="headerlink" title="实现 hover 高亮链路"></a>实现 hover 高亮链路</h3><ul>
+<li><strong>思路</strong><ul>
+<li>初始化highlightNodes: node[]，highlightLinks: link[]，两个数组，用于存储需要高亮的节点和链路</li>
+<li>link和element（即节点，项目中命名为node）本质都是svg元素，监听其mouseover/mouseout事件，借助svg可以灵活绑定class的特点，可通过统一 添加/删除class 实现 高亮/取消高亮 的效果。</li>
+<li>cell:mouseover时：以event.target为root节点<ul>
+<li>向前递归：寻找sourceNode和sourceLink<ul>
+<li>若root是link，寻找该link的sourceNode存入highlightNodes</li>
+<li>若root是node，寻找以该node为target的link存入highlightLinks</li>
+<li>递归过程会循环出现link -&gt; node -&gt; link，直到源头node为止</li>
+</ul>
+</li>
+<li>向后递归：寻找targetNode和targetLink<ul>
+<li>原理同上，递归过程会循环出现link -&gt; node -&gt; link，直到终点node为止</li>
+</ul>
+</li>
+<li>收集到需要高亮的node和link，添加高亮；</li>
+</ul>
+</li>
+<li>cell:mouseout：移除highlightNodes，highlightLinks中node和link的高亮，并清空两个数组</li>
+<li><strong>注：对于<code>&lt;g&gt;</code>元素cell:mouseover/mouseout会在鼠标经过其每个子元素时反复触发</strong>，可以通过svg原生的 <a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/pointer-events" target="_blank" rel="noopener">pointer-events</a>属性，标识需要触发事件的元素</li>
+</ul>
+</li>
+<li><p><strong>关键代码</strong>（这里借助了部分JointJS api，但思路是相通的，可以同样应用到d3，g6中）</p>
+  <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 给所有cell绑定事件</span></span><br><span class="line"><span class="keyword">this</span>.paper.on(<span class="string">'cell:mouseover'</span>, <span class="keyword">this</span>.handleCellMouseOver);</span><br><span class="line"><span class="keyword">this</span>.paper.on(<span class="string">'cell:mouseout'</span>, <span class="keyword">this</span>.handleCellMouseOut);</span><br><span class="line">handleCellMouseOver(cellView) &#123;</span><br><span class="line">    <span class="keyword">this</span>.addHighlight(cellView);</span><br><span class="line">&#125;</span><br><span class="line">handleCellMouseOut() &#123;</span><br><span class="line">    <span class="keyword">this</span>.removeHighlight();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 向前递归，收集source</span></span><br><span class="line">findSourceCell(cell) &#123;</span><br><span class="line">    <span class="keyword">if</span> (cell.isLink()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">this</span>.highlightLinks.includes(cell)) <span class="keyword">this</span>.highlightLinks.push(cell);</span><br><span class="line">        <span class="keyword">const</span> sourceNode = cell.getSourceElement();</span><br><span class="line">        <span class="keyword">if</span> (!sourceNode) <span class="keyword">return</span>;</span><br><span class="line">        <span class="keyword">this</span>.findSourceCell(sourceNode);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">this</span>.highlightNodes.includes(cell)) <span class="keyword">this</span>.highlightNodes.push(cell);</span><br><span class="line">        <span class="keyword">const</span> links = <span class="keyword">this</span>.graph.getConnectedLinks(cell, &#123;</span><br><span class="line">            inbound: <span class="literal">true</span></span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">Array</span>.isArray(links) || links.length &lt; <span class="number">0</span>) <span class="keyword">return</span>;</span><br><span class="line">        links.forEach(<span class="function"><span class="params">link</span> =&gt;</span> <span class="keyword">this</span>.findSourceCell(link));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 向后递归，收集target</span></span><br><span class="line">findTargetCell(cell) &#123;</span><br><span class="line">    <span class="keyword">if</span> (cell.isLink()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">this</span>.highlightLinks.includes(cell)) <span class="keyword">this</span>.highlightLinks.push(cell);</span><br><span class="line">        <span class="keyword">const</span> sourceNode = cell.getTargetElement();</span><br><span class="line">        <span class="keyword">if</span> (!sourceNode) <span class="keyword">return</span>;</span><br><span class="line">        <span class="keyword">this</span>.findTargetCell(sourceNode);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">this</span>.highlightNodes.includes(cell)) <span class="keyword">this</span>.highlightNodes.push(cell);</span><br><span class="line">        <span class="keyword">const</span> links = <span class="keyword">this</span>.graph.getConnectedLinks(cell, &#123;</span><br><span class="line">            outbound: <span class="literal">true</span></span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">Array</span>.isArray(links) || links.length &lt; <span class="number">0</span>) <span class="keyword">return</span>;</span><br><span class="line">        links.forEach(<span class="function"><span class="params">link</span> =&gt;</span> <span class="keyword">this</span>.findTargetCell(link));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 添加高亮</span></span><br><span class="line">addHighlight(rootCellView) &#123;</span><br><span class="line">    <span class="keyword">this</span>.highlightNodes = [];</span><br><span class="line">    <span class="keyword">this</span>.highlightLinks = [];</span><br><span class="line">    <span class="keyword">const</span> root = rootCellView.model;</span><br><span class="line">    <span class="comment">// 收集高亮Cell</span></span><br><span class="line">    <span class="keyword">this</span>.findSourceCell(root);</span><br><span class="line">    <span class="keyword">this</span>.findTargetCell(root);</span><br><span class="line">    <span class="comment">// 先降低全部Cell的透明度</span></span><br><span class="line">    <span class="keyword">this</span>.allCells.forEach(<span class="function"><span class="params">cell</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> cellView = <span class="keyword">this</span>.paper.findViewByModel(cell);</span><br><span class="line">        cellView.highlight(<span class="literal">null</span>, &#123;</span><br><span class="line">            highlighter: &#123;</span><br><span class="line">                name: <span class="string">'addClass'</span>,</span><br><span class="line">                options: &#123;</span><br><span class="line">                    className: <span class="string">'less-opacity'</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="comment">// 恢复需要高亮Cell的透明度</span></span><br><span class="line">    [...this.highlightNodes, ...this.highlightLinks].forEach(<span class="function"><span class="params">cell</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> cellView = <span class="keyword">this</span>.paper.findViewByModel(cell);</span><br><span class="line">        <span class="comment">// 自定义的Options需要在unhighlight方法中声明，不然无法正确移除</span></span><br><span class="line">        cellView.unhighlight(<span class="literal">null</span>, &#123;</span><br><span class="line">            highlighter: &#123;</span><br><span class="line">                name: <span class="string">'addClass'</span>,</span><br><span class="line">                options: &#123;</span><br><span class="line">                    className: <span class="string">'less-opacity'</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 移除高亮</span></span><br><span class="line">removeHighlight() &#123;</span><br><span class="line">    <span class="comment">// 恢复全部Cell的透明度</span></span><br><span class="line">    <span class="keyword">this</span>.allCells.forEach(<span class="function"><span class="params">cell</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> cellView = <span class="keyword">this</span>.paper.findViewByModel(cell);</span><br><span class="line">        <span class="comment">// 自定义的Options需要在unhighlight方法中声明，不然无法正确移除</span></span><br><span class="line">        cellView.unhighlight(<span class="literal">null</span>, &#123;</span><br><span class="line">            highlighter: &#123;</span><br><span class="line">                name: <span class="string">'addClass'</span>,</span><br><span class="line">                options: &#123;</span><br><span class="line">                    className: <span class="string">'less-opacity'</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="comment">// 清空高亮Cell列表</span></span><br><span class="line">    <span class="keyword">this</span>.highlightNodes = [];</span><br><span class="line">    <span class="keyword">this</span>.highlightLinks = [];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>实现效果</strong><br> <img src="http://ww2.sinaimg.cn/large/006tNc79ly1g4q0bu1vlxj311w0f83zl.jpg" alt="blade_dbTopo_hover高亮实现效果"></p>
+</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>按目前的调研来看，本次需求用JointJS，G6，D3都能实现，相比之下<ul>
+<li>JointJS的优势是内置有灵活的交互工具，封装的基础API全面</li>
+<li>G6有中文文档更好理解，插件化提供了更多可能。思想和JointJS类似，理解一个就能较快上手另一个。</li>
+<li>D3自由度最高但是实现起来就更复杂，上手难度较高，我又一次避（cuo）开（guo）了d3，也许总有一天会有复杂的需求让我不得不学习它。</li>
+</ul>
+</li>
+<li>广泛调研，不要畏难，勇于尝试，可能就会发现更优质的工具和实现思路。总结出共通的思想后，可能只用svg也写得出来了。</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div></div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/img/wechatpay.jpg" alt="无花 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/img/alipay.jpg" alt="无花 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/15/closure/" rel="next" title="三道题增强JS基础">
+                <i class="fa fa-chevron-left"></i> 三道题增强JS基础
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">无花</p>
+              <div class="site-description motion-element" itemprop="description">前端，博客</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#需求"><span class="nav-number">1.</span> <span class="nav-text">需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#技术选型"><span class="nav-number">2.</span> <span class="nav-text">技术选型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#拓扑图开发工具尝试"><span class="nav-number">2.1.</span> <span class="nav-text">拓扑图开发工具尝试</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Echarts"><span class="nav-number">2.1.1.</span> <span class="nav-text">Echarts</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HighCharts"><span class="nav-number">2.1.2.</span> <span class="nav-text">HighCharts</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JTopo"><span class="nav-number">2.1.3.</span> <span class="nav-text">JTopo</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Darge-d3"><span class="nav-number">2.1.4.</span> <span class="nav-text">Darge-d3</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#G6"><span class="nav-number">2.1.5.</span> <span class="nav-text">G6</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JointJS"><span class="nav-number">2.1.6.</span> <span class="nav-text">JointJS</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JointJS-FAQ"><span class="nav-number">2.2.</span> <span class="nav-text">JointJS FAQ</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现要点"><span class="nav-number">3.</span> <span class="nav-text">实现要点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#element-amp-link-样式实现"><span class="nav-number">3.1.</span> <span class="nav-text">element &amp; link 样式实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#节点布局"><span class="nav-number">3.2.</span> <span class="nav-text">节点布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现-hover-高亮链路"><span class="nav-number">3.3.</span> <span class="nav-text">实现 hover 高亮链路</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">无花</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">19k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">18 min</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.2.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.2.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '519e3eacd89ca588c27c',
+    clientSecret: '1fe232197c0f57f3c3abddf328fc1a5ec4015cf5',
+    repo: 'xmasong.github.io',
+    owner: 'xmasong',
+    admin: ['xmasong'],
+    id: md5(location.pathname),
+    
+      language: window.navigator.language || window.navigator.userLanguage,
+    
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
