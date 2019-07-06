@@ -82,3 +82,10 @@ deploy:
   type: git
   repo: https://github.com/xmasong/xmasong.github.io
   branch: master
+
+symbols_count_time:
+  symbols: true # 文章字数
+  time: true # 阅读时长
+  total_symbols: true # 站点总字数
+  total_time: true # 站点总阅读时长，展示有问题
+  exclude_codeblock: true
